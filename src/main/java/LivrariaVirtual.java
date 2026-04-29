@@ -9,10 +9,9 @@ import dto.livro.impresso.ImpressoRequest;
 import dto.livro.impresso.ImpressoResponse;
 import dto.venda.VendaRequest;
 import dto.venda.VendaResponse;
+import utils.ScanManager;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class LivrariaVirtual {
 
@@ -22,12 +21,14 @@ public class LivrariaVirtual {
     private final EletronicoController eletronicoController;
     private final ImpressoController impressoController;
     private final VendaController vendaController;
+    private final ScanManager scanner;
 
     public LivrariaVirtual() {
         ApplicationContext context = new ApplicationContext();
         this.eletronicoController = new EletronicoController(context.getEletronicoService());
         this.impressoController = new ImpressoController(context.getImpressoService());
         this.vendaController = new VendaController(context.getVendaService());
+        this.scanner = new ScanManager();
     }
 //    // private Integer numImpresso;
 //    private Integer getNumImpresso() {};
@@ -52,21 +53,20 @@ public class LivrariaVirtual {
     }
 
     public void cadastrarLivro() {
-        Scanner scanner = new Scanner(System.in);
-        String titulo = readNonEmptyString(scanner, "Titulo: ");
-        String autores = readNonEmptyString(scanner, "Autores: ");
-        String editora = readNonEmptyString(scanner, "Editora: ");
-        Double preco = readDouble(scanner, "Preco: ");
-        String tipo = readTipo(scanner, "Tipo (impresso/eletronico): ");
+        String titulo = scanner.readNonEmptyString("Titulo: ");
+        String autores = scanner.readNonEmptyString("Autores: ");
+        String editora = scanner.readNonEmptyString("Editora: ");
+        Double preco = scanner.readDouble("Preco: ");
+        String tipo = scanner.readTipo("Tipo (impresso/eletronico): ");
 
         LivroResponse response = null;
         if (tipo.equals("impresso")) {
-            Double frete = readDouble(scanner, "Frete: ");
-            Integer estoque = readInt(scanner, "Estoque: ");
+            Double frete = scanner.readDouble("Frete: ");
+            Integer estoque = scanner.readInt("Estoque: ");
             ImpressoRequest request = new ImpressoRequest(null, titulo, autores, editora, preco, frete, estoque);
             response = impressoController.cadastrar(request);
         } else if (tipo.equals("eletronico")) {
-            Integer tamanho = readInt(scanner, "Tamanho (MB): ");
+            Integer tamanho = scanner.readInt("Tamanho (MB): ");
             EletronicoRequest request = new EletronicoRequest(null, titulo, autores, editora, preco, tamanho);
             response = eletronicoController.cadastrar(request);
         }
@@ -74,21 +74,19 @@ public class LivrariaVirtual {
     }
 
     public void realizarVenda() {
-        Scanner scanner = new Scanner(System.in);
-        String cliente = readNonEmptyString(scanner, "Cliente: ");
-        Double valor = readDouble(scanner, "Valor: ");
-        List<Integer> livrosIds = readIds(scanner, "Ids dos livros (separados por virgula): ");
+        String cliente = scanner.readNonEmptyString("Cliente: ");
+        Double valor = scanner.readDouble("Valor: ");
+        List<Integer> livrosIds = scanner.readIds("Ids dos livros (separados por virgula): ");
         VendaRequest request = new VendaRequest(cliente, valor, livrosIds);
         VendaResponse response = vendaController.realizarVenda(request);
         System.out.println("Venda registrada com sucesso!\n" + response + "\n");
     }
 
     public void listarLivros() {
-        Scanner scanner = new Scanner(System.in);
         System.out.println("1. Listar todos");
         System.out.println("2. Listar impressos");
         System.out.println("3. Listar eletronicos");
-        int option = readInt(scanner, "Escolha uma opcao: ");
+        int option = scanner.readInt("Escolha uma opcao: ");
 
         if (option == 1) {
             listarLivrosImpressos();
@@ -132,83 +130,14 @@ public class LivrariaVirtual {
     }
 
     public void listarVendas() {
-        System.out.println("Opção 4 selecionada: Listar vendas\n");
-    }
-
-    private String readNonEmptyString(Scanner scanner, String prompt) {
-        while (true) {
-            System.out.print(prompt);
-            String value = scanner.nextLine().trim();
-            if (!value.isEmpty()) {
-                return value;
-            }
-            System.out.println("Valor invalido. Tente novamente.");
+        List<VendaResponse> responses = vendaController.listar();
+        if (responses == null || responses.isEmpty()) {
+            System.out.println("Nenhuma venda encontrada.\n");
+            return;
         }
-    }
-
-    private Double readDouble(Scanner scanner, String prompt) {
-        while (true) {
-            System.out.print(prompt);
-            String value = scanner.nextLine().trim().replace(',', '.');
-            try {
-                return Double.parseDouble(value);
-            } catch (NumberFormatException e) {
-                System.out.println("Numero invalido. Tente novamente.");
-            }
-        }
-    }
-
-    private Integer readInt(Scanner scanner, String prompt) {
-        while (true) {
-            System.out.print(prompt);
-            String value = scanner.nextLine().trim();
-            try {
-                return Integer.parseInt(value);
-            } catch (NumberFormatException e) {
-                System.out.println("Numero invalido. Tente novamente.");
-            }
-        }
-    }
-
-    private String readTipo(Scanner scanner, String prompt) {
-        while (true) {
-            System.out.print(prompt);
-            String value = scanner.nextLine().trim().toLowerCase();
-            if (value.equals("impresso") || value.equals("eletronico")) {
-                return value;
-            }
-            System.out.println("Tipo invalido. Use 'impresso' ou 'eletronico'.");
-        }
-    }
-
-    private List<Integer> readIds(Scanner scanner, String prompt) {
-        while (true) {
-            System.out.print(prompt);
-            String value = scanner.nextLine().trim();
-            if (value.isEmpty()) {
-                System.out.println("Valor invalido. Tente novamente.");
-                continue;
-            }
-            String[] parts = value.split(",");
-            List<Integer> ids = new ArrayList<>();
-            boolean valid = true;
-            for (String part : parts) {
-                String trimmed = part.trim();
-                if (trimmed.isEmpty()) {
-                    valid = false;
-                    break;
-                }
-                try {
-                    ids.add(Integer.parseInt(trimmed));
-                } catch (NumberFormatException e) {
-                    valid = false;
-                    break;
-                }
-            }
-            if (valid && !ids.isEmpty()) {
-                return ids;
-            }
-            System.out.println("Ids invalidos. Informe numeros separados por virgula.");
+        System.out.println("=== Vendas ===");
+        for (VendaResponse response : responses) {
+            System.out.println(response + "\n");
         }
     }
 }

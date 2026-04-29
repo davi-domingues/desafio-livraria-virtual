@@ -68,4 +68,17 @@ public class VendaRepository {
             em.close();
         }
     }
+
+    public java.util.List<Venda> listar() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Venda> query = em.createQuery(
+                    "select distinct v from Venda v left join fetch v.livros",
+                    Venda.class
+            );
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
 }

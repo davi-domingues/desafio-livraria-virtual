@@ -52,4 +52,8 @@ public class VendaService {
         }
         return livros;
     }
+
+    public List<Venda> listar() {
+        return repository.listar();
+    }
 }

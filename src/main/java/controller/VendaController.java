@@ -3,6 +3,7 @@ package controller;
 import dto.venda.VendaRequest;
 import dto.venda.VendaResponse;
 import entity.Venda;
+import java.util.List;
 import mapper.VendaMapper;
 import service.VendaService;
 
@@ -21,5 +22,9 @@ public class VendaController {
         Venda venda = VendaMapper.toEntity(request);
         Venda persisted = service.realizarVenda(venda, request.getIdLivros());
         return VendaMapper.toResponse(persisted);
+    }
+
+    public List<VendaResponse> listar() {
+        return VendaMapper.toResponse(service.listar());
     }
 }
