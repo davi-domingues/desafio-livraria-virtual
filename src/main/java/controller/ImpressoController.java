@@ -25,4 +25,8 @@ public class ImpressoController {
     public List<ImpressoResponse> listar() {
         return (List<ImpressoResponse>) LivroMapper.toResponse(service.listar());
     }
+
+    public Integer getNumImpressos() {
+        return service.getNumImpressos();
+    }
 }

@@ -25,4 +25,8 @@ public class EletronicoController {
     public List<EletronicoResponse> listar() {
         return (List<EletronicoResponse>) LivroMapper.toResponse(service.listar());
     }
+
+    public Integer getNumEletronicos() {
+        return service.getNumEletronicos();
+    }
 }

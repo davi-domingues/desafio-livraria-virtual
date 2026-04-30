@@ -56,4 +56,8 @@ public class VendaService {
     public List<Venda> listar() {
         return repository.listar();
     }
+
+    public Integer getNumVendas() {
+        return repository.countVendas();
+    }
 }

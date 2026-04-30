@@ -30,15 +30,18 @@ public class LivrariaVirtual {
         this.vendaController = new VendaController(context.getVendaService());
         this.scanner = new ScanManager();
     }
-//    // private Integer numImpresso;
-//    private Integer getNumImpresso() {};
-//
-//    // private Integer numEletronico;
-//    private Integer getNumEletronico() {};
-//
-//    // private Integer numVendas;
-//    private Integer getNumVendas() {};
 
+    private Integer getNumImpresso() {
+        return impressoController.getNumImpressos();
+    }
+
+    private Integer getNumEletronico() {
+        return eletronicoController.getNumEletronicos();
+    }
+
+    private Integer getNumVendas() {
+        return vendaController.getNumVendas();
+    }
 
     @Override
     public String toString() {
@@ -53,27 +56,56 @@ public class LivrariaVirtual {
     }
 
     public void cadastrarLivro() {
+        if (getNumImpresso() >= MAX_IMPRESSOS && getNumEletronico() >= MAX_ELETRONICOS) {
+            System.out.println("Limite de livros cadastrados atingido.\n");
+            return;
+        }
+
+        System.out.println("1. Impresso");
+        System.out.println("2. Eletronico");
+        System.out.println("3. Ambos");
+        int option = scanner.readInt("Escolha uma opcao: ");
+
+        if (option != 1 && option != 2 && option != 3) {
+            System.out.println("Opção inválida. Digite um numero entre 1 e 3.\n");
+            return;
+        }
+
         String titulo = scanner.readNonEmptyString("Titulo: ");
         String autores = scanner.readNonEmptyString("Autores: ");
         String editora = scanner.readNonEmptyString("Editora: ");
         Double preco = scanner.readDouble("Preco: ");
-        String tipo = scanner.readTipo("Tipo (impresso/eletronico): ");
 
-        LivroResponse response = null;
-        if (tipo.equals("impresso")) {
+        LivroResponse response;
+        if (option == 1 || option == 3) {
+            if (getNumImpresso() >= MAX_IMPRESSOS) {
+                System.out.println("Limite de livros impressos atingido.\n");
+                return;
+            }
             Double frete = scanner.readDouble("Frete: ");
             Integer estoque = scanner.readInt("Estoque: ");
-            ImpressoRequest request = new ImpressoRequest(null, titulo, autores, editora, preco, frete, estoque);
+            ImpressoRequest request = new ImpressoRequest(titulo, autores, editora, preco, frete, estoque);
             response = impressoController.cadastrar(request);
-        } else if (tipo.equals("eletronico")) {
-            Integer tamanho = scanner.readInt("Tamanho (MB): ");
-            EletronicoRequest request = new EletronicoRequest(null, titulo, autores, editora, preco, tamanho);
-            response = eletronicoController.cadastrar(request);
+            System.out.println("Livro impresso cadastrado com sucesso!\n" + response + "\n");
         }
-        System.out.println("Livro cadastrado com sucesso!\n" + response + "\n");
+
+        if (option == 2 || option == 3) {
+            if (getNumEletronico() >= MAX_ELETRONICOS) {
+                System.out.println("Limite de livros eletronicos atingido.\n");
+                return;
+            }
+            Integer tamanho = scanner.readInt("Tamanho (MB): ");
+            EletronicoRequest request = new EletronicoRequest(titulo, autores, editora, preco, tamanho);
+            response = eletronicoController.cadastrar(request);
+            System.out.println("Livro eletronico cadastrado com sucesso!\n" + response + "\n");
+        }
     }
 
     public void realizarVenda() {
+        if (getNumVendas() >= MAX_VENDAS) {
+            System.out.println("Limite de vendas atingido.\n");
+            return;
+        }
         String cliente = scanner.readNonEmptyString("Cliente: ");
         Double valor = scanner.readDouble("Valor: ");
         List<Integer> livrosIds = scanner.readIds("Ids dos livros (separados por virgula): ");

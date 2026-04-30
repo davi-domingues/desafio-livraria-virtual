@@ -81,4 +81,15 @@ public class VendaRepository {
             em.close();
         }
     }
+
+    public Integer countVendas() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Long> query = em.createQuery("select count(v) from Venda v", Long.class);
+            Long total = query.getSingleResult();
+            return total != null ? total.intValue() : 0;
+        } finally {
+            em.close();
+        }
+    }
 }

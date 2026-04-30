@@ -10,7 +10,7 @@ public class ImpressoRequest extends LivroRequest {
     public ImpressoRequest() {
     }
 
-    public ImpressoRequest(Integer id, String titulo, String autores, String editora, Double preco, Double frete, Integer estoque) {
+    public ImpressoRequest(String titulo, String autores, String editora, Double preco, Double frete, Integer estoque) {
         super(titulo, autores, editora, preco);
         this.frete = frete;
         this.estoque = estoque;

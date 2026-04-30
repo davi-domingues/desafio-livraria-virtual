@@ -27,4 +27,8 @@ public class VendaController {
     public List<VendaResponse> listar() {
         return VendaMapper.toResponse(service.listar());
     }
+
+    public Integer getNumVendas() {
+        return service.getNumVendas();
+    }
 }

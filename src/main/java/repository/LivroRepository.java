@@ -67,4 +67,26 @@ public class LivroRepository {
             em.close();
         }
     }
+
+    public Integer countImpressos() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Long> query = em.createQuery("select count(i) from Impresso i", Long.class);
+            Long total = query.getSingleResult();
+            return total != null ? total.intValue() : 0;
+        } finally {
+            em.close();
+        }
+    }
+
+    public Integer countEletronicos() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Long> query = em.createQuery("select count(e) from Eletronico e", Long.class);
+            Long total = query.getSingleResult();
+            return total != null ? total.intValue() : 0;
+        } finally {
+            em.close();
+        }
+    }
 }

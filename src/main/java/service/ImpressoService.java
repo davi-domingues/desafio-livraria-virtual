@@ -27,6 +27,10 @@ public class ImpressoService {
         return repository.findImpressos();
     }
 
+    public Integer getNumImpressos() {
+        return repository.countImpressos();
+    }
+
 //    public void atualizarEstoque(Integer estoque) {
 //        this.estoque--;
 //    }

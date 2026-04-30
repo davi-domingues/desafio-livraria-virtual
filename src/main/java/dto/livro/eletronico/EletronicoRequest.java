@@ -9,7 +9,7 @@ public class EletronicoRequest extends LivroRequest {
     public EletronicoRequest() {
     }
 
-    public EletronicoRequest(Integer id, String titulo, String autores, String editora, Double preco, Integer tamanho) {
+    public EletronicoRequest(String titulo, String autores, String editora, Double preco, Integer tamanho) {
         super(titulo, autores, editora, preco);
         this.tamanho = tamanho;
     }

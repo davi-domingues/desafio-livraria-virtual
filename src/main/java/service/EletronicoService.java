@@ -26,4 +26,8 @@ public class EletronicoService {
     public List<Eletronico> listar() {
         return repository.findEletronicos();
     }
+
+    public Integer getNumEletronicos() {
+        return repository.countEletronicos();
+    }
 }
